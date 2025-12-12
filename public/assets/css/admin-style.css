@@ -1,0 +1,237 @@
+:root {
+  --primary-bg: #1e1e2f;
+  --primary-text: gray;
+  --secondary-bg: #2a2a3b;
+  --card-bg: #2f3440;
+  --highlight-color: #56cfe1;
+  --accent-color: #4caf50;
+  --danger-color: #e74c3c;
+  --border-color: #3c3c4f;
+  --column-header-bg: black; 
+}
+
+:root.light {
+  --primary-bg: #f9f9f9;
+  --primary-text: #333;
+  --secondary-bg: #ffffff;
+  --card-bg: #ffffff;
+  --highlight-color: #3498db;
+  --accent-color: #27ae60;
+  --danger-color: #e74c3c;
+  --border-color: #ddd;
+  --column-header-bg: #f0f0f0;  
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-left {
+  width: 250px;
+  background-color: var(--secondary-bg);
+  padding: 20px;
+  transition: width 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.app-left.collapsed {
+  width: 60px;
+}
+
+.app-name {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--highlight-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-left.collapsed .app-name span:last-child {
+  display: none;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 40px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+  cursor: pointer;
+}
+
+.nav-item i {
+  margin-right: 10px;
+  font-size: 18px;
+  color: var(--highlight-color);
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.main {
+  flex: 1;
+  padding: 20px;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.main-title {
+  font-size: 26px;
+  color: var(--highlight-color);
+}
+
+.mode-switch {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.mode-switch:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.theme-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--primary-text);
+}
+
+.search-container {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.search-container input[type="text"] {
+  flex: 1;
+  max-width: 400px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--card-bg);
+  color: var(--primary-text);
+}
+
+.search-container .add-btn {
+  margin-left: 20px;
+  padding: 10px 20px;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.search-container .add-btn:hover {
+  background-color: #388e3c;
+}
+
+.products-area-wrapper.columnView {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.products-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background-color: var(--card-bg);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.product-header {
+  font-weight: bold;
+  background-color: var(--column-header-bg);
+  color: var(--primary-text);
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color, #444); /* fallback */
+}
+
+
+
+.product-cell {
+  padding: 10px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.product-cell a {
+  color: var(--highlight-color);
+  text-decoration: none;
+}
+
+.product-cell a:hover {
+  text-decoration: underline;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: var(--primary-text);
+  background-color: var(--card-bg);
+}
+
+.pagination button.active {
+  background-color: var(--highlight-color);
+  color: white;
+  font-weight: bold;
+}
+
+.btn-add {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-add:hover {
+  background-color: #388e3c;
+  transform: translateY(-2px);
+}

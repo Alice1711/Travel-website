@@ -1,0 +1,244 @@
+<%- include('../partials/header') %>
+
+<!-- Bootstrap CSS + Icons + Google Fonts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- Custom CSS -->
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f3f6fb;
+  }
+
+  .tour-card {
+    border-radius: 20px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+    display: flex;
+    min-height: 320px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    flex-direction: row;
+  }
+
+  .tour-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  }
+
+  .tour-image {
+    width: 50%;
+    object-fit: cover;
+    aspect-ratio: 4 / 3;
+    height: 100%;
+  }
+
+  .tour-content {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 50%;
+    background-color: #fafafa;
+  }
+
+  .promo-text {
+    color: #00bcd4;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+  }
+
+  .tour-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 12px;
+  }
+
+  .tour-info {
+    display: flex;
+    gap: 20px;
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+  }
+
+  .tour-info i {
+    margin-right: 5px;
+    color: #00bcd4;
+  }
+
+  .tour-description {
+    font-size: 0.875rem;
+    color: #777;
+    margin-bottom: 24px;
+    line-height: 1.4;
+    max-height: 3.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .btn-reserve {
+    background: linear-gradient(to right, #00bcd4, #00acc1);
+    color: white;
+    font-weight: 600;
+    border-radius: 30px;
+    padding: 10px 26px;
+    border: none;
+    font-size: 0.95rem;
+    transition: background 0.3s ease;
+    text-decoration: none;
+    width: fit-content;
+  }
+
+  .btn-reserve:hover {
+    background: linear-gradient(to right, #019aaa, #008b94);
+  }
+
+  h2, p.text-muted {
+    text-align: center;
+  }
+
+  .pagination .page-link {
+    border: none;
+    color: #00bcd4;
+    font-weight: 600;
+    background-color: transparent;
+    border-radius: 50% !important;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    line-height: 44px;
+    text-align: center;
+    box-shadow: 0 0 0 1px #00bcd4 inset;
+    transition: all 0.3s ease;
+  }
+
+  .pagination .page-item.active .page-link {
+    background-color: #00bcd4;
+    color: #fff;
+    box-shadow: 0 0 0 1px #00bcd4 inset;
+  }
+
+  .pagination .page-link:hover {
+    background-color: #e0f7fa;
+    color: #00bcd4;
+  }
+
+  @media (max-width: 768px) {
+    .tour-card {
+      flex-direction: column;
+    }
+
+    .tour-image, .tour-content {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .home-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #00bcd4;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+  background-color: #019aaa;
+  color: white;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container my-5">
+    <!-- <a href="/" class="home-button">
+        <i class="bi bi-house-door-fill me-1"></i> Home
+      </a>       -->
+<h2 class="text-center fw-bold mb-3">Best Weekly Offers In Each City</h2>
+<p class="text-center text-muted mb-5">
+Pain itself is love, it is the love of the human race, but it is the pain of the times when one works.
+</p>
+
+<div class="row row-cols-1 row-cols-md-2 g-4">
+  <% if (tours.length === 0) { %>
+    <p class="text-center">No tours found matching your criteria.</p>
+  <% } else { %>
+    <% tours.forEach(tour => { %>
+      <div class="col">
+        <div class="tour-card h-100">
+          <img src="<%= tour.image_url %>" class="tour-image" alt="<%= tour.title %>">
+          <div class="tour-content">
+            <p class="promo-text"><%= tour.promo_text || '*Limited Offer Today' %></p>
+            <div class="tour-title"><%= tour.title %></div>
+            <div class="tour-info">
+              <span><i class="bi bi-clock"></i> <%= tour.duration || '5 Days' %></span>
+              <span><i class="bi bi-map"></i> Daily Places</span>
+            </div>
+            <div class="tour-description">
+              <%= tour.description ? tour.description.substring(0, 100) : 'Lorem ipsum dolor sit amet...' %>...
+            </div>
+            <a href="/tour/<%= tour.id %>" class="btn-reserve">Make A Reservation</a>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  <% } %>
+</div>
+
+<!-- Pagination -->
+<%
+// Chuẩn bị query string để giữ lại các filter hiện có
+let queryString = '';
+if (title) queryString += `&title=${encodeURIComponent(title)}`;
+if (price) queryString += `&price=${price}`;
+if (minPrice) queryString += `&minPrice=${minPrice}`;
+if (maxPrice) queryString += `&maxPrice=${maxPrice}`;
+%>
+
+<ul class="pagination justify-content-center mt-5">
+  <% if (currentPage > 1) { %>
+    <li class="page-item">
+      <a class="page-link" href="?page=<%= currentPage - 1 %><%= queryString %>">←</a>
+    </li>
+  <% } else { %>
+    <li class="page-item disabled">
+      <span class="page-link">←</span>
+    </li>
+  <% } %>
+
+  <% for (let i = 1; i <= totalPages; i++) { %>
+    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+      <a class="page-link" href="?page=<%= i %><%= queryString %>"><%= i %></a>
+    </li>
+  <% } %>
+
+  <% if (currentPage < totalPages) { %>
+    <li class="page-item">
+      <a class="page-link" href="?page=<%= currentPage + 1 %><%= queryString %>">→</a>
+    </li>
+  <% } else { %>
+    <li class="page-item disabled">
+      <span class="page-link">→</span>
+    </li>
+  <% } %>
+</ul>
+
+
+<%- include('../partials/footer') %>

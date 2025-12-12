@@ -1,0 +1,246 @@
+<%- include('../partials/header') %>
+
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<!-- FontAwesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<style>
+  .home-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #00bcd4;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+  }
+
+  .home-button:hover {
+    background-color: #019aaa;
+    color: white;
+  }
+
+  .toast-message {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    /* Căn giữa theo chiều ngang */
+    top: 50%;
+    /* Căn giữa theo chiều dọc */
+    transform: translate(-50%, -50%);
+    /* Căn giữa chính xác */
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.5s ease, top 0.5s ease;
+  }
+
+  .toast-show {
+    visibility: visible;
+    opacity: 1;
+    top: 50%;
+    /* Giữ ở giữa khi thông báo xuất hiện */
+  }
+
+  .toast-success {
+    background-color: #28a745;
+  }
+
+  .toast-error {
+    background-color: #dc3545;
+  }
+</style>
+
+<!-- TOAST -->
+<div id="toast" class="toast-message"></div>
+
+<section class="about-tour py-5" style="position: relative; background-color: #f9f9f9;">
+  <!-- HOME BUTTON -->
+  <!-- <a href="/" class="home-button">
+    <i class="fas fa-house-user me-1"></i> Home
+  </a> -->
+
+  <div class="container" style="position: relative; z-index: 1; color: #f9f9f9;">
+    <div class="text-center mb-5">
+      <p class="text-uppercase" style="color: #f9f9f9;">Special Package</p>
+      <h2 class="display-5 fw-bold" style="color: #f9f9f9;">
+        <%= tour.title %>
+      </h2>
+      <p style="max-width: 600px; margin: auto; color: #f9f9f9;">
+        <%= tour.description || 'Explore this exclusive tour package for an unforgettable experience.' %>
+      </p>
+    </div>
+
+    <div class="row g-4 align-items-start">
+      <!-- LEFT COLUMN: TOUR INFO -->
+      <div class="col-md-6">
+        <div class="bg-white p-4 rounded shadow">
+          <ul class="list-group list-group-flush mb-4">
+            <li class="list-group-item"><strong>Duration:</strong>
+              <%= tour.duration %>
+            </li>
+            <li class="list-group-item"><strong>Accommodation:</strong>
+              <%= tour.accommodation %>
+            </li>
+            <li class="list-group-item"><strong>Transportation:</strong>
+              <%= tour.transportation %>
+            </li>
+            <li class="list-group-item"><strong>Food:</strong>
+              <%= tour.food_facilities %>
+            </li>
+            <li class="list-group-item"><strong>Price:</strong> $<%= tour.price %>
+            </li>
+          </ul>
+          <div class="text-center">
+            <button class="btn btn-warning btn-lg fw-bold w-100" data-bs-toggle="modal"
+              data-bs-target="#bookingModal">Book This Tour</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: MAP -->
+      <div class="col-md-6">
+        <div class="ratio ratio-4x3 shadow rounded">
+          <iframe src="https://www.google.com/maps?q=<%= tour.title %>&output=embed" style="border:0;"
+            allowfullscreen="" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional background image overlay -->
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)), url('<%= tour.image_url %>?v=<%= Date.now() %>') center/cover no-repeat;
+      z-index: 0;"></div>
+</section>
+
+<!-- Modal for Booking Form -->
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bookingModalLabel">Book Your Tour</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="bookingForm" action="/book-tour" method="POST">
+          <input type="hidden" name="tour_id" value="<%= tour.id %>" />
+
+          <div class="mb-3">
+            <label for="name" class="form-label">Your Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Your Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="phone" class="form-label">Your Phone Number</label>
+            <input type="tel" class="form-control" id="phone" name="phone" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="guest_count" class="form-label">Number of Guests</label>
+            <input type="number" class="form-control" id="guest_count" name="guest_count" required>
+          </div>
+
+          <!-- Transportation (Dropdown) -->
+          <div class="mb-3">
+            <label for="transportation" class="form-label">Transportation</label>
+            <select class="form-select" id="transportation" name="transportation" required>
+              <option value="<%= tour.transportation %>">
+                <%= tour.transportation %>
+              </option>
+            </select>
+          </div>
+
+          <!-- Accommodation (Dropdown) -->
+          <div class="mb-3">
+            <label for="accommodation" class="form-label">Accommodation</label>
+            <select class="form-select" id="accommodation" name="accommodation" required>
+              <option value="<%= tour.accommodation %>">
+                <%= tour.accommodation %>
+              </option>
+            </select>
+          </div>
+
+          <!-- Food Facilities (Display Text) -->
+          <div class="mb-3">
+            <label for="food_facilities" class="form-label">Food Facilities</label>
+            <input type="text" class="form-control" id="food_facilities" name="food_facilities"
+              value="<%= tour.food_facilities %>" readonly>
+          </div>
+
+          <div class="mb-3">
+            <label for="travel_date" class="form-label">Travel Date</label>
+            <input type="date" class="form-control" id="travel_date" name="travel_date" required>
+          </div>
+
+          <div class="text-center">
+            <button type="submit" class="btn btn-warning w-100">Submit Booking</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap 5 JS (For Modal) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  // Show toast message function
+  function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.className = `toast-message toast-show toast-${type}`;
+    setTimeout(() => {
+      toast.className = 'toast-message';
+    }, 3000);
+  }
+
+  // Handle form submission via JavaScript
+  document.getElementById('bookingForm').addEventListener('submit', async function (e) {
+    e.preventDefault();  // Prevent the default form submission
+    const form = e.target;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());  // Convert form data to object
+
+    try {
+      const res = await fetch('/book-tour', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)  // Send data as JSON
+      });
+
+      const resultText = await res.text();
+      if (res.ok) {
+        showToast('Book Tour thành công! Xin vui lòng đợi nhân viên liên hệ! Chúng tôi xin chân thành cảm ơn', 'success');
+        form.reset();  // Reset the form after successful submission
+
+        // Close the modal after a successful booking
+        const modal = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
+        modal.hide();  // Hide the modal
+
+      } else {
+        showToast(resultText, 'error');  // Show error message if the request fails
+      }
+    } catch (err) {
+      showToast('Lỗi khi đặt chỗ!', 'error');  // Show error message if there is an issue with the request
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,981 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+	<!-- META DATA -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+	<!--font-family-->
+	<link href="https://fonts.googleapis.com/css?family=Rufina:400,700" rel="stylesheet" />
+
+	<link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet" />
+
+	<!-- TITLE OF SITE -->
+	<title>Travel</title>
+
+	<!-- favicon img -->
+	<link rel="shortcut icon" type="image/icon" href="/assets/logo/favicon.png" />
+
+	<!--font-awesome.min.css-->
+	<link rel="stylesheet" href="/assets/css/font-awesome.min.css" />
+
+	<!--animate.css-->
+	<link rel="stylesheet" href="/assets/css/animate.css" />
+
+	<!--hover.css-->
+	<link rel="stylesheet" href="/assets/css/hover-min.css">
+
+	<!--datepicker.css-->
+	<link rel="stylesheet" href="/assets/css/datepicker.css">
+
+	<!--owl.carousel.css-->
+	<link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
+	<link rel="stylesheet" href="/assets/css/owl.theme.default.min.css" />
+
+	<!-- range css-->
+	<link rel="stylesheet" href="/assets/css/jquery-ui.min.css" />
+
+	<!--bootstrap.min.css-->
+	<link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+
+	<!-- bootsnav -->
+	<link rel="stylesheet" href="/assets/css/bootsnav.css" />
+
+	<!--style.css-->
+	<link rel="stylesheet" href="/assets/css/style.css" />
+
+	<!--responsive.css-->
+	<link rel="stylesheet" href="/assets/css/responsive.css" />
+
+	<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"> -->
+
+	<!-- Animate.css (tuỳ chọn hiệu ứng chữ) -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+	<!-- Bootstrap 5.3.3 -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+	<div id="toast" class="toast-message"></div>
+	<style>
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			overflow-x: hidden;
+		}
+
+		/* tránh việc nội dung bị che do fixed-top */
+		#home {
+			padding-top: 70px;
+		}
+
+		.subscribe-toast {
+			visibility: hidden;
+			min-width: 320px;
+			max-width: 90%;
+			background: linear-gradient(to right, #28a745, #218838);
+			color: #fff;
+			text-align: center;
+			font-size: 1.25rem;
+			/* chữ to hơn */
+			font-weight: 600;
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+			/* đổ bóng */
+			border-radius: 12px;
+			/* bo góc mượt hơn */
+			padding: 20px 30px;
+			position: fixed;
+			z-index: 9999;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			opacity: 0;
+			transition: opacity 0.5s ease, visibility 0.5s, transform 0.4s ease;
+		}
+
+		.subscribe-toast.show {
+			visibility: visible;
+			opacity: 1;
+			transform: translate(-50%, -50%) scale(1.02);
+		}
+	</style>
+
+	<style>
+		@font-face {
+			font-family: "bw";
+			src: url("https://robindelaporte.fr/codepen/play/BwModelicaSS01-ExtraBold.woff") format("woff");
+		}
+
+		.explore-fancy {
+			font-family: "bw", sans-serif;
+			text-decoration: none;
+			position: relative;
+			display: inline-block;
+			font-size: 2rem;
+			/* nhỏ hơn trước */
+			color: #fff;
+			background-color: #acc7ed;
+			border-radius: 8rem;
+			padding: 1.2rem 3rem 1.6rem;
+			transform-style: preserve-3d;
+			transition: all 0.4s ease;
+			z-index: 5;
+			overflow: hidden;
+			cursor: pointer;
+			border: none;
+		}
+
+		.explore-fancy span {
+			position: relative;
+			z-index: 6;
+			pointer-events: none;
+		}
+
+		.explore-fancy::before {
+			content: "";
+			background: linear-gradient(56deg, #61dafb 0%, #d6cbf6 46%, #f2056f 100%);
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			opacity: 0;
+			border-radius: 8rem;
+			transition: opacity 0.3s ease;
+			z-index: 3;
+		}
+
+		.explore-fancy::after {
+			content: "";
+			background: linear-gradient(56deg, #61dafb 0%, #d6cbf6 46%, #f2056f 100%);
+			width: 80%;
+			height: 20%;
+			position: absolute;
+			bottom: -4px;
+			left: 10%;
+			opacity: 0;
+			filter: blur(12px);
+			border-radius: 8rem;
+			transform: translateZ(-1px);
+			transition: opacity 0.4s ease;
+			z-index: 2;
+		}
+
+		.explore-fancy:hover {
+			transform: scale(1.15);
+			/* giảm từ 1.35 xuống 1.15 */
+			transition: all 0.4s ease;
+		}
+
+		.explore-fancy:hover::before,
+		.explore-fancy:hover::after {
+			opacity: 1;
+		}
+	</style>
+
+</head>
+
+<body>
+	<!--[if lte IE 9]>
+		<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade
+			your browser</a> to improve your experience and security.</p>
+		<![endif]-->
+
+	<!-- main-menu Start -->
+	<header class="top-area bg-dark fixed-top shadow-sm">
+		<div class="container">
+			<nav class="navbar navbar-expand-lg navbar-dark py-3">
+				<a class="navbar-brand d-flex align-items-center" href="/" style="font-size: 2.5rem; font-weight: 900;">
+					Trip<span style="color: #00e6e6; font-size: 2.8rem;">ly</span>
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse justify-content-end" id="mainNav">
+					<ul class="navbar-nav align-items-center gap-3">
+						<li class="nav-item">
+							<a class="nav-link text-uppercase fw-bold px-3 fs-4 menu-item" href="#home">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-uppercase fw-bold px-3 fs-4 menu-item"
+								href="#gallery">Destination</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-uppercase fw-bold px-3 fs-4 menu-item" href="#pack">Packages</a>
+						</li>
+						<!-- <li class="nav-item">
+							<a class="nav-link text-uppercase fw-bold px-3 fs-4 menu-item" href="#spo">Special
+								Offers</a>
+						</li> -->
+						<li class="nav-item">
+							<a class="nav-link text-uppercase fw-bold px-3 fs-4 menu-item" href="#blog">Blog</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-uppercase fw-bold px-3 fs-4 menu-item" href="#subs">Subscription</a>
+						</li>
+						<li class="nav-item">
+							<a href="#gallery"
+								class="btn btn-info fw-bold text-white px-4 py-2 fs-4 rounded-pill shadow-sm">
+								Book Now
+							</a>
+						</li>
+						<!-- Icon chuyển hướng Admin -->
+						<li class="nav-item" style="list-style: none; margin: 0; padding: 0;;">
+							<a href="/admin" class="btn btn-info fw-bold text-white px-4 py-2 fs-4 rounded-pill shadow-sm" style="background-color: black">
+								Go to Admin
+							</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+	</header>
+	<!-- main-menu End -->
+
+	<!-- Hero Carousel Start -->
+	<section id="home" class="hero-carousel position-relative">
+		<div id="aboutUsCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="6000">
+			<div class="carousel-inner">
+
+				<!-- Slide 1 -->
+				<div class="carousel-item active">
+					<div class="hero-slide d-flex align-items-center justify-content-center text-center"
+						style="background-image: url('https://my-triply-website.s3.ap-southeast-1.amazonaws.com/background/b2.jpg');">
+						<div class="container text-white">
+							<h2 class="hero-title">Discover Vietnam - Timeless Beauty</h2>
+							<p class="hero-subtitle">From emerald rice fields to golden beaches – Vietnam welcomes you.
+							</p>
+							<button class="explore-fancy"
+								onclick="document.getElementById('pack').scrollIntoView({ behavior: 'smooth' });">
+								<span>Explore Now</span>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Slide 2 -->
+				<div class="carousel-item">
+					<div class="hero-slide d-flex align-items-center justify-content-center text-center"
+						style="background-image: url('https://my-triply-website.s3.ap-southeast-1.amazonaws.com/background/b3.jpg');">
+						<div class="container text-white">
+							<h2 class="hero-title">Discover Vietnam - Timeless Beauty</h2>
+							<p class="hero-subtitle">Where mountains meet the sea, and history lives on.</p>
+							<button class="explore-fancy"
+								onclick="document.getElementById('pack').scrollIntoView({ behavior: 'smooth' });">
+								<span>Explore Now</span>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Slide 3 -->
+				<div class="carousel-item">
+					<div class="hero-slide d-flex align-items-center justify-content-center text-center"
+						style="background-image: url('https://my-triply-website.s3.ap-southeast-1.amazonaws.com/background/b1.jpg');">
+						<div class="container text-white">
+							<h2 class="hero-title">Discover Vietnam - Timeless Beauty</h2>
+							<p class="hero-subtitle">Wander ancient streets, taste unforgettable flavors.</p>
+							<button class="explore-fancy"
+								onclick="document.getElementById('pack').scrollIntoView({ behavior: 'smooth' });">
+								<span>Explore Now</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Controls -->
+			<button class="carousel-control-prev" type="button" data-bs-target="#aboutUsCarousel" data-bs-slide="prev">
+				<span class="carousel-control-prev-icon"></span>
+			</button>
+			<button class="carousel-control-next" type="button" data-bs-target="#aboutUsCarousel" data-bs-slide="next">
+				<span class="carousel-control-next-icon"></span>
+			</button>
+
+			<!-- Progress Bar -->
+			<div class="carousel-progress">
+				<div class="carousel-progress-bar" id="progressBar"></div>
+			</div>
+
+			<!-- Slide Number -->
+			<div class="carousel-slide-number text-white">
+				<span id="currentSlide">1</span> / 3
+			</div>
+		</div>
+	</section>
+	<!-- Hero Carousel End -->
+
+
+	<!-- Search -->
+	<div class="travel-box custom-search-box py-4">
+		<div class="container">
+			<div class="row align-items-center">
+				<div class="col-lg-2 col-md-12">
+					<h4 class="search-label">Sort Tour By:</h4>
+				</div>
+
+				<!-- Filter by Tour-title -->
+				<div class="col-lg-4 col-md-6">
+					<select class="custom-select-box" id="titleFilter">
+						<option value="">All tours</option>
+						<% allTitles.forEach(title=> { %>
+							<option value="<%= title.title %>" <%=title.title===title ? 'selected' : '' %>>
+								<%= title.title %>
+							</option>
+							<% }); %>
+					</select>
+				</div>
+
+				<!-- Filter by Price Range -->
+				<div class="col-lg-4 col-md-6">
+					<select class="custom-select-box" id="priceFilter">
+						<option value="">All Prices</option>
+						<% if (minPrice && maxPrice) { %>
+							<option value="<%= minPrice %>" <%=price==minPrice ? 'selected' : '' %>>Up to <%= minPrice
+									%>
+							</option>
+							<option value="<%= maxPrice / 2 %>" <%=price==maxPrice / 2 ? 'selected' : '' %>>Up to <%=
+									maxPrice / 2 %>
+							</option>
+							<option value="<%= maxPrice %>" <%=price==maxPrice ? 'selected' : '' %>>Up to <%= maxPrice
+									%>
+							</option>
+							<option value="<%= maxPrice + 1 %>" <%=price==maxPrice + 1 ? 'selected' : '' %>>Above <%=
+									maxPrice %>
+							</option>
+							<% } %>
+					</select>
+				</div>
+
+
+
+
+				<div class="col-lg-2 col-md-12 text-lg-end text-center mt-md-2 mt-lg-0">
+					<button class="custom-search-button" onclick="filterTours()">Search</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function filterTours() {
+			const titleFilter = document.getElementById('titleFilter').value;
+			const priceFilter = document.getElementById('priceFilter').value;
+
+			let url = '/search?';
+
+			if (titleFilter) {
+				url += `title=${titleFilter}&`;
+			}
+
+			if (priceFilter) {
+				url += `price=${priceFilter}`;
+			}
+
+			window.location.href = url; // redirect to the filtered URL
+		}
+
+	</script>
+	<!-- Search end -->
+
+	<!--service start-->
+	<section id="service" class="service py-5 mt-5">
+		<div class="container">
+			<div class="row justify-content-center text-center">
+
+				<!-- Service 1: Quality Support -->
+				<div class="col-md-4 col-sm-12 mb-4">
+					<div class="single-service-box">
+						<div class="service-img mb-3">
+							<i class="fa fa-phone fa-5x text-primary"></i> <!-- Thay headset bằng phone -->
+						</div>
+						<div class="service-content">
+							<h3 class="font-weight-bold">Quality Support</h3>
+							<p class="text-muted">24/7 customer assistance and expert support for your needs.</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Service 2: Amazing Tours -->
+				<div class="col-md-4 col-sm-12 mb-4">
+					<div class="single-service-box">
+						<div class="service-img mb-3">
+							<i class="fa fa-globe fa-5x text-success"></i> <!-- Thay globe-americas bằng globe -->
+						</div>
+						<div class="service-content">
+							<h3 class="font-weight-bold">Amazing Tour Packages</h3>
+							<p class="text-muted">Curated journeys that will create lasting memories.</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Service 3: Premium Hotels -->
+				<div class="col-md-4 col-sm-12 mb-4">
+					<div class="single-service-box">
+						<div class="service-img mb-3">
+							<i class="fa fa-building fa-5x text-danger"></i> <!-- Thay hotel bằng building -->
+						</div>
+						<div class="service-content">
+							<h3 class="font-weight-bold">Premium Hotels</h3>
+							<p class="text-muted">Stay in the most luxurious and comfortable accommodations worldwide.
+							</p>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</section>
+	<!--service end-->
+
+	<!--gallery start-->
+	<section id="gallery" class="gallery">
+		<div class="container">
+			<div class="gallery-details">
+				<div class="gallary-header text-center">
+					<h2>
+						top destination
+					</h2>
+					<p>
+						Discover the most loved travel spots around the globe.
+					</p>
+				</div><!--/.gallery-header-->
+				<div class="gallery-box">
+					<div class="gallery-content">
+						<div class="filtr-container">
+							<div class="row">
+								<% destinations.forEach(destination=> { %>
+									<div class="col-md-4 col-sm-6">
+										<div class="filtr-item">
+											<img src="<%= (destination.image_url ? destination.image_url + '?v=' + Date.now() : '/assets/images/gallary/default.jpg') %>"
+												alt="<%= destination.name %>" />
+
+											<div class="item-title">
+												<a href="/destination/<%= destination.id %>">
+													<%= destination.name %>
+												</a>
+												<p>
+													<span>
+														<%= destination.tours_count %> tours
+													</span>
+													<span>
+														<%= destination.places_count %> places
+													</span>
+												</p>
+											</div><!-- /.item-title -->
+										</div><!-- /.filtr-item -->
+									</div><!-- /.col -->
+									<% }) %>
+							</div><!-- /.row -->
+						</div><!-- /.filtr-container-->
+					</div><!-- /.gallery-content -->
+				</div><!--/.galley-box-->
+			</div><!--/.gallery-details-->
+		</div><!--/.container-->
+	</section>
+	<!--gallery end-->
+
+	<!--discount-offer start-->
+	<section class="discount-offer">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="dicount-offer-content text-center">
+						<h2>Join with us within 1 June, 2025 and get upto 40% Discount</h2>
+						<div class="campaign-timer">
+							<div id="timer">
+								<div class="time time-after" id="days">
+									<span></span>
+								</div><!--/.time-->
+								<div class="time time-after" id="hours">
+
+								</div><!--/.time-->
+								<div class="time time-after" id="minutes">
+
+								</div><!--/.time-->
+								<div class="time" id="seconds">
+
+								</div><!--/.time-->
+							</div><!--/.timer-->
+						</div><!--/.campaign-timer-->
+						<div class="about-btn">
+							<button class="about-view discount-offer-btn btn btn-warning fw-bold px-5 py-2"
+								onclick="document.getElementById('subs').scrollIntoView({behavior:'smooth'})">
+								Join Now
+							</button>
+						</div>
+					</div><!-- /.dicount-offer-content-->
+				</div><!-- /.col-->
+			</div><!-- /.row-->
+		</div><!-- /.container-->
+
+	</section><!-- /.discount-offer-->
+	<!--discount-offer end-->
+
+	<!--packages start-->
+	<section id="pack" class="packages">
+		<div class="container">
+			<div class="gallary-header text-center">
+				<h2>special packages</h2>
+				<p>Exclusive deals tailored for your perfect getaway.</p>
+			</div>
+			<div class="packages-content">
+				<div class="row">
+					<% tours.forEach(tour=> { %>
+						<div class="col-md-4 col-sm-6">
+							<div class="single-package-item">
+								<img src="<%= tour.image_url || '/assets/images/packages/default.jpg' %>"
+									alt="package-place" class="package-img-fixed"
+									onerror="this.src='/assets/images/packages/default.jpg'">
+								<div class="single-package-item-txt">
+									<h3>
+										<%= tour.title %> <span class="pull-right">$<%= tour.price %></span>
+									</h3>
+									<div class="packages-para">
+										<p>
+											<span>
+												<i class="fa fa-angle-right"></i>
+												<%= tour.duration || 'N/A' %>
+											</span>
+											<i class="fa fa-angle-right"></i>
+											<%= tour.accommodation || 'N/A' %>
+										</p>
+										<p>
+											<span>
+												<i class="fa fa-angle-right"></i>
+												<%= tour.transportation || 'N/A' %>
+											</span>
+											<i class="fa fa-angle-right"></i>
+											<%= tour.food_facilities || 'N/A' %>
+										</p>
+									</div>
+									<div class="packages-review">
+										<p>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<span>
+												<%= tour.reviews || 0 %> reviews
+											</span>
+										</p>
+									</div>
+									<div class="about-btn text-center mt-4">
+										<a href="/tour/<%= tour.id %>" style="
+											  background-color: #14b8b8;
+											  color: #ffffff;
+											  padding: 12px 24px;
+											  border-radius: 999px;
+											  text-decoration: none;
+											  font-weight: 600;
+											  font-size: 16px;
+											  display: inline-block;
+											  transition: background-color 0.3s ease, transform 0.2s ease;
+											" onmouseover="this.style.backgroundColor='#0ea5a5'; this.style.transform='translateY(-2px)';"
+											onmouseout="this.style.backgroundColor='#14b8b8'; this.style.transform='none';">
+											BOOK NOW
+										</a>
+									</div>
+
+
+								</div>
+							</div>
+						</div>
+						<% }) %>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--packages end-->
+
+	<!-- testimonial Start -->
+	<section class="testemonial">
+		<div class="container">
+			<div class="gallary-header text-center">
+				<h2>clients reviews</h2>
+				<p>Hear what our happy travelers have to say.</p>
+			</div>
+
+			<div class="owl-carousel owl-theme" id="testemonial-carousel">
+				<% reviews.forEach(r=> { %>
+					<div class="home1-testm item">
+						<div class="home1-testm-single text-center">
+							<div class="home1-testm-img">
+								<img src="<%= r.avatar_url %>" alt="Client Avatar" />
+							</div>
+							<div class="home1-testm-txt">
+								<span class="icon section-icon">
+									<i class="fa fa-quote-left" aria-hidden="true"></i>
+								</span>
+								<p>
+									<%= r.content %>
+								</p>
+								<h3 class="testimonial-name">
+									<%= r.name %>
+								</h3>
+								<h4>
+									<%= r.location %>
+								</h4>
+							</div>
+						</div>
+					</div>
+					<% }) %>
+			</div>
+		</div>
+	</section>
+	<!-- testimonial End -->
+
+	<!-- special-offer start -->
+	<!-- <section id="spo" class="special-offer"
+		style="background: url('<%= featuredTour.image_url %>') no-repeat center; background-size: cover; position: relative; z-index: 1;">
+		<div class="container">
+			<div class="special-offer-content">
+				<div class="row">
+					<div class="col-sm-8">
+						<div class="single-special-offer">
+							<div class="single-special-offer-txt">
+								<h2>
+									<%= featuredTour.title %>
+								</h2>
+								<div class="packages-review special-offer-review">
+									<p>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<span>
+											<%= featuredTour.reviews %> reviews
+										</span>
+									</p>
+								</div>
+								<div class="packages-para special-offer-para">
+									<p>
+										<span><i class="fa fa-angle-right"></i>
+											<%= featuredTour.duration %>
+										</span>
+										<span><i class="fa fa-angle-right"></i> 2 person</span>
+										<span><i class="fa fa-angle-right"></i>
+											<%= featuredTour.accommodation %>
+										</span>
+									</p>
+									<p>
+										<span><i class="fa fa-angle-right"></i>
+											<%= featuredTour.transportation %>
+										</span>
+										<span><i class="fa fa-angle-right"></i>
+											<%= featuredTour.food_facilities %>
+										</span>
+									</p>
+									<p class="offer-para">
+										<%= featuredTour.description %>
+									</p>
+								</div>
+								<div class="offer-btn-group">
+									<% const originalPrice=featuredTour.price; %>
+										<% const discountedPrice=(originalPrice * 0.6).toFixed(2); %>
+											<div class="about-btn">
+												<a
+													href="/about-tour/<%= featuredTour.id %>?discountedPrice=<%= discountedPrice %>">
+													<button class="about-view packages-btn offer-btn">make tour</button>
+												</a>
+											</div>
+											<div class="about-btn">
+												<a
+													href="/about-tour/<%= featuredTour.id %>?discountedPrice=<%= discountedPrice %>">
+													<button class="about-view packages-btn">book now</button>
+												</a>
+											</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-sm-4">
+						<div class="single-special-offer">
+							<div class="single-special-offer-bg">
+								<img src="/assets/images/offer/offer-shape.png" alt="offer-shape">
+							</div>
+							<div class="single-special-shape-txt">
+								<h3>special offer</h3>
+								<h4><span>40%</span><br>off</h4>
+								<p><span>$<%= discountedPrice %></span><br>regular $<%= originalPrice %>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section> -->
+	<!-- special-offer end -->
+
+	<!--blog start-->
+	<section id="blog" class="blog">
+		<div class="container">
+			<div class="blog-details">
+				<div class="gallary-header text-center">
+					<h2>latest news</h2>
+					<p>Travel News from all over the world</p>
+				</div>
+				<div class="box-container">
+					<% blogs.forEach(blog=> { %>
+						<div class="box-item">
+							<div class="flip-box">
+								<div class="flip-box-front text-center"
+									style="background-image: url('<%= blog.image_url %>');">
+									<div class="inner color-white">
+										<h3 class="flip-box-header">
+											<%= blog.title %>
+										</h3>
+										<p>
+											<%= blog.excerpt.substring(0, 80) %>...
+										</p>
+										<img src="https://s25.postimg.cc/65hsttv9b/cta-arrow.png" alt=""
+											class="flip-box-img">
+									</div>
+								</div>
+								<div class="flip-box-back text-center"
+									style="background-image: url('<%= blog.image_url %>');">
+									<div class="inner color-white">
+										<h3 class="flip-box-header">
+											<%= blog.title %>
+										</h3>
+										<p>Published: <%= new Date(blog.published_date).toLocaleDateString() %>
+										</p>
+										<a href="/blog/<%= blog.slug %>">
+											<button class="flip-box-button">Read More</button>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<% }) %>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--blog end-->
+
+	<!--subscribe start-->
+	<section id="subs" class="subscribe">
+		<div class="container">
+			<div class="subscribe-title text-center">
+				<h2>
+					Join our Subscribers List to Get Regular Update
+				</h2>
+				<p>
+					Subscribe Now. We will send you Best offer for your Trip
+				</p>
+			</div>
+
+			<form id="subscribeForm">
+				<div class="row">
+					<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+						<div class="custom-input-group position-relative">
+							<input type="email" name="email" class="form-control" placeholder="Enter your Email Here"
+								required />
+							<button type="submit" class="appsLand-btn subscribe-btn">Subscribe</button>
+							<div class="clearfix"></div>
+							<i class="fa fa-envelope position-absolute"
+								style="right: 20px; top: 50%; transform: translateY(-50%); color: #aaa;"></i>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</section>
+	<!--subscribe end-->
+
+	<!-- Toast dành riêng cho Subscribe -->
+	<div id="subscribe-toast" class="subscribe-toast">Cảm ơn quý khách đã theo dõi chúng tôi!</div>
+
+	<!-- Script xử lý submit -->
+	<script>
+		const subscribeForm = document.getElementById('subscribeForm');
+		const subscribeToast = document.getElementById('subscribe-toast');
+
+		subscribeForm.addEventListener('submit', async function (e) {
+			e.preventDefault();
+			const email = subscribeForm.email.value;
+
+			try {
+				const res = await fetch('/subscribe', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email })
+				});
+
+				if (res.ok) {
+					showSubscribeToast();
+					subscribeForm.reset();
+				} else {
+					alert('Đăng ký thất bại.');
+				}
+			} catch (err) {
+				alert('Lỗi kết nối đến server.');
+			}
+		});
+
+		function showSubscribeToast() {
+			subscribeToast.classList.add('show');
+			setTimeout(() => {
+				subscribeToast.classList.remove('show');
+			}, 3000);
+		}
+	</script>
+
+
+	<!--subscribe end-->
+
+	<!-- footer-copyright start -->
+	<footer class="footer-copyright">
+		<div class="container">
+			<div class="footer-content">
+				<div class="row">
+
+					<div class="col-sm-3">
+						<div class="single-footer-item">
+							<div class="footer-logo">
+								<a href="/">
+									Trip<span>ly</span>
+								</a>
+								<p>best travel agency</p>
+							</div>
+						</div><!--/.single-footer-item-->
+					</div><!--/.col-->
+
+					<div class="col-sm-3">
+						<div class="single-footer-item">
+							<h2>Links</h2>
+							<div class="single-footer-txt">
+								<p><a href="#home">Home</a></p>
+								<p><a href="#gallery">Destination</a></p>
+								<p><a href="#pack">Package</a></p>
+								<p><a href="#spo">Special Offers</a></p>
+								<p><a href="#blog">Blog</a></p>
+							</div><!--/.single-footer-txt-->
+						</div><!--/.single-footer-item-->
+					</div><!--/.col-->
+
+					<div class="col-sm-3">
+						<div class="single-footer-item text-center">
+							<h2>Contact Us</h2>
+							<div class="single-footer-txt">
+								<p>+123 456 789 (0)</p>
+								<p class="foot-email"><a href="mailto:triply@travel.com">triply@travel.com</a></p>
+								<p>Ho Chi Minh City, Vietnam</p>
+							</div><!--/.single-footer-txt-->
+						</div><!--/.single-footer-item-->
+					</div><!--/.col-->
+
+				</div><!--/.row-->
+			</div><!--/.footer-content-->
+
+			<hr>
+
+			<div class="foot-icons">
+				<ul class="footer-social-links list-inline list-unstyled">
+					<li><a href="#" target="_blank" class="foot-icon-bg-1"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="#" target="_blank" class="foot-icon-bg-2"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="#" target="_blank" class="foot-icon-bg-3"><i class="fa fa-instagram"></i></a></li>
+				</ul>
+				<p>&copy; 2017 <a href="https://www.themesine.com" target="_blank">ThemeSINE</a>. All Rights Reserved
+				</p>
+			</div><!--/.foot-icons-->
+
+			<div id="scroll-Top">
+				<i class="fa fa-angle-double-up return-to-top" id="scroll-top" data-toggle="tooltip"
+					data-placement="top" title="Back to Top" aria-hidden="true"></i>
+			</div><!--/.scroll-Top-->
+		</div><!-- /.container-->
+	</footer><!-- /.footer-copyright-->
+	<!-- footer-copyright end -->
+
+
+
+	<script src="/assets/js/jquery.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+
+	<!--modernizr.min.js-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+
+
+	<!--bootstrap.min.js-->
+	<script src="/assets/js/bootstrap.min.js"></script>
+
+	<!-- bootsnav js -->
+	<script src="/assets/js/bootsnav.js"></script>
+
+	<!-- jquery.filterizr.min.js -->
+	<script src="/assets/js/jquery.filterizr.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+
+	<!--jquery-ui.min.js-->
+	<script src="/assets/js/jquery-ui.min.js"></script>
+
+	<!-- counter js -->
+	<!-- <script src="/assets/js/jquery.counterup.min.js"></script> -->
+	<!-- <script src="/assets/js/waypoints.min.js"></script> -->
+
+	<!--owl.carousel.js-->
+	<script src="/assets/js/owl.carousel.min.js"></script>
+
+	<!-- jquery.sticky.js -->
+	<script src="/assets/js/jquery.sticky.js"></script>
+
+	<!--datepicker.js-->
+	<script src="/assets/js/datepicker.js"></script>
+
+	<!--Custom JS-->
+	<script src="/assets/js/custom.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Custom JS -->
+	<script>
+		const carousel = document.getElementById('aboutUsCarousel');
+		const progressBar = document.getElementById('progressBar');
+		const currentSlide = document.getElementById('currentSlide');
+
+		function updateProgressBar() {
+			progressBar.style.transition = 'none';
+			progressBar.style.width = '0%';
+			setTimeout(() => {
+				progressBar.style.transition = 'width 6s linear';
+				progressBar.style.width = '100%';
+			}, 50);
+		}
+
+		function updateSlideNumber() {
+			const index = [...carousel.querySelectorAll('.carousel-item')].findIndex(item =>
+				item.classList.contains('active')
+			);
+			currentSlide.textContent = index + 1;
+		}
+
+		carousel.addEventListener('slide.bs.carousel', () => {
+			updateProgressBar();
+		});
+
+		carousel.addEventListener('slid.bs.carousel', () => {
+			updateSlideNumber();
+		});
+
+		// Initial trigger
+		document.addEventListener('DOMContentLoaded', () => {
+			updateProgressBar();
+			updateSlideNumber();
+		});
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,208 @@
+<%- include('../partials/header') %>
+
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<!-- FontAwesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+<style>
+  .toast-message {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    /* Căn giữa theo chiều ngang */
+    top: 50%;
+    /* Căn giữa theo chiều dọc */
+    transform: translate(-50%, -50%);
+    /* Căn giữa chính xác */
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.5s ease, top 0.5s ease;
+  }
+
+  .toast-show {
+    visibility: visible;
+    opacity: 1;
+    top: 50%;
+    /* Giữ ở giữa khi thông báo xuất hiện */
+  }
+
+
+
+  .toast-success {
+    background-color: #28a745;
+  }
+
+  .toast-error {
+    background-color: #dc3545;
+  }
+
+  .home-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #00bcd4;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+  }
+
+  .home-button:hover {
+    background-color: #019aaa;
+    color: white;
+  }
+</style>
+
+<!-- TOAST -->
+<div id="toast" class="toast-message"></div>
+
+<!-- ABOUT LOCATION SECTION WITH BACKGROUND IMAGE -->
+<section class="about-location py-5" style="background-color: #f9f9f9; position: relative">
+  <!-- HOME BUTTON -->
+  <!-- <a href="/" class="home-button">
+    <i class="fas fa-house-user me-1"></i> Home
+  </a> -->
+  <div class="container" style="position: relative; z-index: 1">
+    <!-- HEADER -->
+    <div class="text-center mb-5">
+      <p class="text-uppercase text-secondary" style="letter-spacing: 1px">
+        Book Preferred Deal Here
+      </p>
+      <h2 class="display-5 fw-bold">Book A Destination Trip</h2>
+      <p class="text-muted" style="max-width: 600px; margin: auto">
+        Explore <%= destination.name %> – one of our most loved destinations.
+          Book now for unforgettable memories.
+      </p>
+      <a href="#form" class="btn btn-outline-dark mt-3">Discover More</a>
+    </div>
+
+    <!-- CONTACT CARDS -->
+    <div class="row justify-content-center mb-5">
+      <div class="col-md-4 text-center mb-3">
+        <div class="p-4 bg-white shadow rounded h-100">
+          <i class="fa fa-phone fa-2x mb-2 text-warning"></i>
+          <h5>Make a Phone Call</h5>
+          <p class="text-muted mb-0">+123 456 789 (0)</p>
+        </div>
+      </div>
+      <div class="col-md-4 text-center mb-3">
+        <div class="p-4 bg-white shadow rounded h-100">
+          <i class="fa fa-envelope fa-2x mb-2 text-warning"></i>
+          <h5>Contact Us via Email</h5>
+          <p class="text-muted mb-0">triply@travel.com</p>
+        </div>
+      </div>
+      <div class="col-md-4 text-center mb-3">
+        <div class="p-4 bg-white shadow rounded h-100">
+          <i class="fa fa-map-marker fa-2x mb-2 text-warning"></i>
+          <h5>Visit Our Office</h5>
+          <p class="text-muted mb-0">123 Main Street, London, UK</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAP & FORM -->
+    <div class="row g-4 align-items-center" id="form">
+      <!-- GOOGLE MAP -->
+      <div class="col-lg-6">
+        <div class="ratio ratio-4x3 shadow rounded">
+          <iframe src="https://www.google.com/maps?q=<%= destination.name %>&output=embed" style="border: 0"
+            allowfullscreen="" loading="lazy"></iframe>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div class="col-lg-6">
+        <div class="bg-white p-4 shadow rounded">
+          <h4 class="mb-4 text-center">
+            Make Your <span class="text-warning">Destination</span> Now
+          </h4>
+          <form id="bookingForm" action="/book-destination" method="POST">
+            <input type="hidden" name="destination_id" value="<%= destination.id %>" />
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <input type="text" name="name" class="form-control" placeholder="Your Name" required />
+              </div>
+              <div class="col-md-6">
+                <input type="tel" name="phone" class="form-control" placeholder="Phone Number" required />
+              </div>
+              <div class="col-md-6">
+                <input type="number" name="guest_count" class="form-control" placeholder="Number of Guests" min="1"
+                  required />
+              </div>
+              <div class="col-md-6">
+                <input type="date" name="travel_date" class="form-control" required />
+              </div>
+              <div class="col-12">
+                <input type="text" name="destination" class="form-control" value="<%= destination.name %>" readonly />
+              </div>
+              <div class="col-12 text-center mt-3">
+                <button type="submit" class="btn btn-warning w-100 fw-bold">
+                  Make Your Destination Now
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BACKGROUND IMAGE WITH TRANSPARENT OVERLAY -->
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.4)),
+    url('<%= destination.image_url %>?v=<%= Date.now() %>') center/cover no-repeat;
+    z-index: 0;"></div>
+</section>
+
+<script>
+  // Show toast message function
+  function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.className = `toast-message toast-show toast-${type}`;
+    setTimeout(() => {
+      toast.className = 'toast-message';
+    }, 3000);
+  }
+
+  // Handle form submission via JavaScript
+  document.getElementById('bookingForm').addEventListener('submit', async function (e) {
+    e.preventDefault();  // Prevent the default form submission
+    const form = e.target;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());  // Convert form data to object
+
+    try {
+      const res = await fetch('/book-destination', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)  // Send data as JSON
+      });
+
+      const resultText = await res.text();
+      if (res.ok) {
+        showToast(resultText, 'success');
+        form.reset();  // Reset the form after successful submission
+      } else {
+        showToast(resultText, 'error');
+      }
+    } catch (err) {
+      showToast('Lỗi khi đặt chỗ!', 'error');
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>

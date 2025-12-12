@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en" class="light"> <!-- Thêm lớp "light" ở đây -->
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/assets/css/admin-style.css" />
+    <style>
+        /* CSS cho sidebar thu nhỏ và mở rộng */
+        .app-left {
+            width: 250px;
+            transition: width 0.3s ease;
+        }
+
+        .app-left.collapsed {
+            width: 50px;
+            /* Thu nhỏ sidebar */
+        }
+
+        /* Ẩn chữ Panel khi sidebar thu nhỏ */
+        .app-left .app-name {
+            white-space: nowrap;
+            transition: opacity 0.3s ease;
+        }
+
+        .app-left.collapsed .app-name span:last-child {
+            opacity: 0;
+            /* Ẩn chữ Panel */
+        }
+
+        /* Giữ lại dấu 3 gạch (hamburger menu) */
+        #menu-toggle {
+            font-size: 24px;
+            display: inline-block;
+            transition: opacity 0.3s ease;
+        }
+
+        .app-left.collapsed #menu-toggle {
+            opacity: 1;
+            /* Dấu 3 gạch vẫn hiển thị */
+        }
+
+        /* CSS cho thanh tìm kiếm và phân trang */
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .search-container input[type="text"] {
+            width: 60%;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        .search-container .add-btn {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .pagination button {
+            padding: 10px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .pagination .active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .products-area-wrapper.columnView {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        .products-column {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .product-header {
+            font-weight: bold;
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+
+        .product-cell {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* Đặt kiểu mặc định cho các chữ trong thanh sidebar */
+        .app-name span,
+        .nav-list .nav-item {
+            transition: opacity 0.3s ease;
+        }
+
+        /* Ẩn chữ khi sidebar thu lại */
+        .app-left.collapsed .app-name span,
+        .app-left.collapsed .nav-list .nav-item {
+            opacity: 0;
+        }
+
+        /* Tùy chỉnh để khi sidebar thu lại, chỉ biểu tượng menu (hamburger) còn lại */
+        .app-left.collapsed #menu-toggle {
+            display: block;
+        }
+
+        /* Điều chỉnh style để khi sidebar mở, các chữ hiển thị lại */
+        .app-left:not(.collapsed) .app-name span,
+        .app-left:not(.collapsed) .nav-list .nav-item {
+            opacity: 1;
+        }
+
+        .toast-message {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 9999;
+            left: 50%;
+            /* Căn giữa theo chiều ngang */
+            top: 50%;
+            /* Căn giữa theo chiều dọc */
+            transform: translate(-50%, -50%);
+            /* Căn giữa chính xác */
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.5s ease, top 0.5s ease;
+        }
+
+        .toast-show {
+            visibility: visible;
+            opacity: 1;
+            top: 50%;
+            /* Giữ ở giữa khi thông báo xuất hiện */
+        }
+
+        .toast-success {
+            background-color: #28a745;
+        }
+
+        .toast-error {
+            background-color: #dc3545;
+        }
+
+        .home-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #00bcd4;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            z-index: 10;
+            transition: background-color 0.3s ease;
+        }
+
+        .home-button:hover {
+            background-color: #019aaa;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="app-left">
+            <div class="app-name">
+                <!-- HOME BUTTON -->
+                <a href="/" class="home-button">
+                    <i class="fas fa-house-user me-1"></i> Home
+                </a>
+                <span id="menu-toggle" class="toggle-btn"></span><span>Panel</span>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item active" id="dashboard-btn">Dashboard</li>
+                <li class="nav-item" id="tours-btn">Tours</li>
+                <li class="nav-item" id="destinations-btn">Destinations</li>
+                <li class="nav-item" id="blogs-btn">Blogs</li>
+                <li class="nav-item" id="toursBook-btn">Tour Bookings</li>
+                <li class="nav-item" id="desBook-btn">Destination Bookings</li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <section class="main">
+            <div class="main-header">
+                <div class="main-title">Admin Dashboard</div>
+                <button class="mode-switch">
+                    <svg class="theme-icon" viewBox="0 0 24 24" fill="none">
+                        <path class="moon-icon" d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 1 0 9.79 9.79z"
+                            fill="currentColor" />
+                        <path class="sun-icon"
+                            d="M12 4V2M12 22v-2M4.22 4.22l-1.42 1.42M20.48 20.48l-1.42-1.42M2 12H4m16 0h2M4.22 19.78l1.42-1.42M19.78 4.22l-1.42 1.42M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8z"
+                            fill="currentColor" style="display: none;" />
+                        <i class="fas fa-sun sun-icon" style="display: none;"></i>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="main-body">
+                <!-- Dashboard Content -->
+                <div class="dashboard-content">
+                    <h3>Welcome to Admin Dashboard</h3>
+                    <p>Here you can manage your tours, destinations, and blogs.</p>
+                    <img src="https://my-triply-website.s3.ap-southeast-1.amazonaws.com/background/viet-nam.jpg"
+                        alt="Vietnam background"
+                        style="max-width: 100%; height: auto; border-radius: 10px; margin-top: 10px;" />
+                </div>
+
+                <!-- Tour Content -->
+                <!-- Tour Content -->
+                <div class="tour-content" style="display:none;">
+                    <h3>Danh sách Tour</h3>
+                    <div class="search-container">
+                        <input type="text" id="search-tour" placeholder="Search Tours...">
+                        <button class="add-btn" id="add-tour-btn">+ Add Tour</button>
+                    </div>
+                    <div class="products-area-wrapper columnView" id="tour-list">
+                        <!-- ID Column -->
+                        <div class="products-column">
+                            <div class="product-header">ID</div>
+                            <% tours.forEach(tour=> { %>
+                                <div class="product-cell">
+                                    <%= tour.id %>
+                                </div>
+                                <% }) %>
+                        </div>
+
+                        <!-- Tour Name Column -->
+                        <div class="products-column">
+                            <div class="product-header">Tour Name</div>
+                            <% tours.forEach(tour=> { %>
+                                <div class="product-cell">
+                                    <%= tour.title %>
+                                </div>
+                                <% }) %>
+                        </div>
+
+                        <!-- Price Column -->
+                        <div class="products-column">
+                            <div class="product-header">Price</div>
+                            <% tours.forEach(tour=> { %>
+                                <div class="product-cell">
+                                    <%= tour.price %>
+                                </div>
+                                <% }) %>
+                        </div>
+
+                        <!-- Action Column -->
+                        <div class="products-column">
+                            <div class="product-header">Action</div>
+                            <% tours.forEach(tour=> { %>
+                                <div class="product-cell">
+                                    <a href="/admin/edit-tour/<%= tour.id %>">Edit</a> |
+                                    <!-- Form để xóa tour -->
+                                    <form id=".delete-tour-form" action="/admin/delete-tour/<%= tour.id %>"
+                                        method="POST" style="display: inline;">
+                                        <button type="submit"
+                                            style="color: red; background: none; border: none; cursor: pointer;">Delete</button>
+                                    </form>
+                                </div>
+                                <% }) %>
+                        </div>
+
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="tour-pagination"></div>
+                </div>
+
+                <script>
+                    document.getElementById('search-tour').addEventListener('keyup', function () {
+                        const searchValue = this.value.toLowerCase();
+                        const nameCells = document.querySelectorAll('#tour-list .products-column:nth-child(1) .product-cell');
+
+                        nameCells.forEach((cell, index) => {
+                            const destName = cell.textContent.toLowerCase();
+                            const show = destName.includes(searchValue);
+                            document.querySelectorAll('#tour-list .products-column').forEach(col => {
+                                col.children[index + 1].style.display = show ? '' : 'none';
+                            });
+                        });
+                    });
+                </script>
+
+                <script>
+                    const itemsPerPageTour = 5;
+                    let currentPageTour = 1;
+
+                    function paginateTours() {
+                        const cells = document.querySelectorAll('#tour-list .products-column:first-child .product-cell');
+                        const totalItems = cells.length;
+                        const totalPages = Math.ceil(totalItems / itemsPerPageTour);
+
+                        const startIdx = (currentPageTour - 1) * itemsPerPageTour;
+                        const endIdx = currentPageTour * itemsPerPageTour;
+
+                        document.querySelectorAll('#tour-list .products-column').forEach(column => {
+                            Array.from(column.querySelectorAll('.product-cell')).forEach((cell, index) => {
+                                cell.style.display = (index >= startIdx && index < endIdx) ? '' : 'none';
+                            });
+                        });
+
+                        const paginationDiv = document.getElementById('tour-pagination');
+                        paginationDiv.innerHTML = '';
+
+                        for (let i = 1; i <= totalPages; i++) {
+                            const btn = document.createElement('button');
+                            btn.textContent = i;
+                            btn.className = 'page-btn' + (i === currentPageTour ? ' active' : '');
+                            btn.addEventListener('click', () => {
+                                currentPageTour = i;
+                                paginateTours();
+                            });
+                            paginationDiv.appendChild(btn);
+                        }
+
+                        if (currentPageTour < totalPages) {
+                            const nextBtn = document.createElement('button');
+                            nextBtn.textContent = 'Next';
+                            nextBtn.className = 'page-btn';
+                            nextBtn.addEventListener('click', () => {
+                                currentPageTour++;
+                                paginateTours();
+                            });
+                            paginationDiv.appendChild(nextBtn);
+                        }
+                    }
+
+                    document.addEventListener('DOMContentLoaded', paginateTours);
+                </script>
+
+
+                <script>
+                    document.querySelectorAll('.delete-tour-form').forEach(form => {
+                        form.addEventListener('submit', async function (e) {
+                            e.preventDefault(); // Ngăn submit mặc định
+
+                            if (!confirm('Bạn có chắc muốn xóa tour này?')) return;
+
+                            const tourId = form.getAttribute('data-id');
+
+                            try {
+                                const res = await fetch(`/admin/delete-tour/${tourId}`, {
+                                    method: 'POST'
+                                });
+
+                                const resultText = await res.text();
+                                if (res.ok) {
+                                    showToast('Xóa tour thành công!', 'success');
+                                    setTimeout(() => {
+                                        location.reload(); // Reload sau khi xóa
+                                    }, 1000);
+                                } else {
+                                    showToast(resultText || 'Không thể xóa tour', 'error');
+                                }
+                            } catch (err) {
+                                showToast('Lỗi khi xóa tour!', 'error');
+                            }
+                        });
+                    });
+                </script>
+
+                <!-- Destination Content -->
+                <div class="destination-content" style="display:none;">
+                    <h3>Danh sách Destination</h3>
+                    <div class="search-container">
+                        <input type="text" id="search-destination" placeholder="Search Destinations...">
+                        <button class="add-btn" id="add-destination-btn">+ Add Destination</button>
+                    </div>
+                    <div class="products-area-wrapper columnView" id="destination-list">
+                        <!-- ID Column -->
+                        <div class="products-column">
+                            <div class="product-header">ID</div>
+                            <% destinations.forEach(d=> { %>
+                                <div class="product-cell">
+                                    <%= d.id %>
+                                </div>
+                                <% }) %>
+                        </div>
+
+                        <!-- Name Column -->
+                        <div class="products-column">
+                            <div class="product-header">Name</div>
+                            <% destinations.forEach(d=> { %>
+                                <div class="product-cell">
+                                    <%= d.name %>
+                                </div>
+                                <% }) %>
+                        </div>
+
+                        <!-- Action Column -->
+                        <div class="products-column">
+                            <div class="product-header">Action</div>
+                            <% destinations.forEach(d=> { %>
+                                <div class="product-cell">
+                                    <a href="/admin/edit-des/<%= d.id %>">Edit</a> |
+                                    <form action="/admin/delete-des/<%= d.id %>" method="POST" style="display: inline;">
+                                        <button type="submit"
+                                            style="color: red; background: none; border: none; cursor: pointer;">Delete</button>
+                                    </form>
+                                </div>
+                                <% }) %>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="destination-pagination"></div>
+                </div>
+
+
+                <!-- Search Destination -->
+                <script>
+                    document.getElementById('search-destination').addEventListener('keyup', function () {
+                        const searchValue = this.value.toLowerCase();
+                        const nameCells = document.querySelectorAll('#destination-list .products-column:nth-child(1) .product-cell');
+
+                        nameCells.forEach((cell, index) => {
+                            const destName = cell.textContent.toLowerCase();
+                            const show = destName.includes(searchValue);
+                            document.querySelectorAll('#destination-list .products-column').forEach(col => {
+                                col.children[index + 1].style.display = show ? '' : 'none';
+                            });
+                        });
+                    });
+                </script>
+
+                <!-- Paginate Destination -->
+                <script>
+                    const itemsPerPageDest = 5;
+                    let currentPageDest = 1;
+
+                    function paginateDestinations() {
+                        const totalItems = document.querySelectorAll('#destination-list .products-column:first-child .product-cell').length;
+                        const totalPages = Math.ceil(totalItems / itemsPerPageDest);
+
+                        const startIdx = (currentPageDest - 1) * itemsPerPageDest;
+                        const endIdx = currentPageDest * itemsPerPageDest;
+
+                        document.querySelectorAll('#destination-list .products-column').forEach(column => {
+                            Array.from(column.querySelectorAll('.product-cell')).forEach((cell, index) => {
+                                cell.style.display = (index >= startIdx && index < endIdx) ? '' : 'none';
+                            });
+                        });
+
+                        const paginationDiv = document.getElementById('destination-pagination');
+                        paginationDiv.innerHTML = '';
+                        for (let i = 1; i <= totalPages; i++) {
+                            const btn = document.createElement('button');
+                            btn.textContent = i;
+                            btn.className = 'page-btn' + (i === currentPageDest ? ' active' : '');
+                            btn.addEventListener('click', () => {
+                                currentPageDest = i;
+                                paginateDestinations();
+                            });
+                            paginationDiv.appendChild(btn);
+                        }
+
+                        if (currentPageDest < totalPages) {
+                            const nextBtn = document.createElement('button');
+                            nextBtn.textContent = 'Next';
+                            nextBtn.className = 'page-btn';
+                            nextBtn.addEventListener('click', () => {
+                                currentPageDest++;
+                                paginateDestinations();
+                            });
+                            paginationDiv.appendChild(nextBtn);
+                        }
+                    }
+
+                    document.addEventListener('DOMContentLoaded', paginateDestinations);
+                </script>
+
+
+                <!-- Blog Content -->
+                <div class="blog-content" style="display:none;">
+                    <h3>Danh sách Blog</h3>
+                    <div class="search-container">
+                        <input type="text" id="search-blog" placeholder="Search Blogs...">
+                        <button class="add-btn" id="add-blog-btn">+ Add Blog</button>
+                    </div>
+                    <div class="products-area-wrapper columnView" id="blog-list">
+                        <div class="products-column">
+                            <div class="product-header">Title</div>
+                            <% blogs.forEach(blog=> { %>
+                                <div class="product-cell">
+                                    <%= blog.title %>
+                                </div>
+                                <% }) %>
+                        </div>
+                        <div class="products-column">
+                            <div class="product-header">Excerpt</div>
+                            <% blogs.forEach(blog=> { %>
+                                <div class="product-cell">
+                                    <%= blog.excerpt %>
+                                </div>
+                                <% }) %>
+                        </div>
+                        <div class="products-column">
+                            <div class="product-header">Action</div>
+                            <% blogs.forEach(blog=> { %>
+                                <div class="product-cell">
+                                    <a href="/admin/edit-blog/<%= blog.id %>">Edit</a> |
+                                    <!-- Form để xóa blog -->
+                                    <form action="/admin/delete-blog/<%= blog.id %>" method="POST"
+                                        style="display: inline;">
+                                        <button type="submit"
+                                            style="color: red; background: none; border: none; cursor: pointer;">Delete</button>
+                                    </form>
+                                </div>
+                                <% }) %>
+                        </div>
+                    </div>
+                    <div class="pagination" id="blog-pagination"></div>
+                </div>
+
+                <!-- Search Blog -->
+                <script>
+                    document.getElementById('search-blog').addEventListener('keyup', function () {
+                        const searchValue = this.value.toLowerCase();
+                        const nameCells = document.querySelectorAll('#blog-list .products-column:nth-child(1) .product-cell');
+
+                        nameCells.forEach((cell, index) => {
+                            const blogTitle = cell.textContent.toLowerCase();
+                            const show = blogTitle.includes(searchValue);
+                            document.querySelectorAll('#blog-list .products-column').forEach(col => {
+                                col.children[index + 1].style.display = show ? '' : 'none';
+                            });
+                        });
+                    });
+                </script>
+
+                <!-- Paginate Blog -->
+                <script>
+                    const itemsPerPageBlog = 5;
+                    let currentPageBlog = 1;
+
+                    function paginateBlogs() {
+                        const totalItems = document.querySelectorAll('#blog-list .products-column:first-child .product-cell').length;
+                        const totalPages = Math.ceil(totalItems / itemsPerPageBlog);
+
+                        const startIdx = (currentPageBlog - 1) * itemsPerPageBlog;
+                        const endIdx = currentPageBlog * itemsPerPageBlog;
+
+                        document.querySelectorAll('#blog-list .products-column').forEach(column => {
+                            Array.from(column.querySelectorAll('.product-cell')).forEach((cell, index) => {
+                                cell.style.display = (index >= startIdx && index < endIdx) ? '' : 'none';
+                            });
+                        });
+
+                        const paginationDiv = document.getElementById('blog-pagination');
+                        paginationDiv.innerHTML = '';
+                        for (let i = 1; i <= totalPages; i++) {
+                            const btn = document.createElement('button');
+                            btn.textContent = i;
+                            btn.className = 'page-btn' + (i === currentPageBlog ? ' active' : '');
+                            btn.addEventListener('click', () => {
+                                currentPageBlog = i;
+                                paginateBlogs();
+                            });
+                            paginationDiv.appendChild(btn);
+                        }
+
+                        if (currentPageBlog < totalPages) {
+                            const nextBtn = document.createElement('button');
+                            nextBtn.textContent = 'Next';
+                            nextBtn.className = 'page-btn';
+                            nextBtn.addEventListener('click', () => {
+                                currentPageBlog++;
+                                paginateBlogs();
+                            });
+                            paginationDiv.appendChild(nextBtn);
+                        }
+                    }
+
+                    document.addEventListener('DOMContentLoaded', paginateBlogs);
+                </script>
+
+                <!-- Tour Bookings  -->
+                <div class="tour-bookings-content" style="display:none;">
+                    <h3>Tour Bookings</h3>
+                    <div class="search-container">
+                        <input type="text" id="search-tour-book" placeholder="Search Tour Bookings...">
+                    </div>
+
+                    <div class="products-area-wrapper columnView" id="tour-booking-list">
+                        <!-- Tour Bookings Column -->
+                        <div class="products-column">
+                            <div class="product-header">Tours</div>
+                            <% if (tourBookings && tourBookings.length> 0) { %>
+                                <% tourBookings.forEach(b=> { %>
+                                    <div class="product-cell">
+                                        <strong>
+                                            <%= b.tour_title %>
+                                        </strong>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="product-cell">No tour bookings available</div>
+                                            <% } %>
+                        </div>
+
+
+                        <div class="products-column">
+                            <div class="product-header">Name of Client</div>
+                            <% if (tourBookings && tourBookings.length> 0) { %>
+                                <% tourBookings.forEach(b=> { %>
+                                    <div class="product-cell">
+                                        <strong>
+                                            <%= b.name %>
+                                        </strong>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="product-cell">No tour bookings available</div>
+                                            <% } %>
+                        </div>
+
+                        <!-- Phone Column -->
+                        <div class="products-column">
+                            <div class="product-header">Phone</div>
+                            <% if (tourBookings && tourBookings.length> 0) { %>
+                                <% tourBookings.forEach(b=> { %>
+                                    <div class="product-cell">
+                                        <%= b.phone %>
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                        </div>
+
+                        <!-- Guests Column -->
+                        <div class="products-column">
+                            <div class="product-header">Guests</div>
+                            <% if (tourBookings && tourBookings.length> 0) { %>
+                                <% tourBookings.forEach(b=> { %>
+                                    <div class="product-cell">
+                                        <%= b.guest_count %>
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                        </div>
+
+                        <div class="products-column">
+                            <div class="product-header">Travel Date</div>
+                            <% if (tourBookings && tourBookings.length> 0) { %>
+                                <% tourBookings.forEach(b=> { %>
+                                    <div class="product-cell">
+                                        <%= b.travel_date.toISOString().split('T')[0] %>
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="tour-booking-pagination"></div>
+                </div>
+
+                <script>
+                    // Số mục mỗi trang
+                    const itemsPerPageTourBook = 5;
+                    let currentPageTourBook = 1;
+
+                    function paginateTourBookings() {
+                        const totalItems = document.querySelectorAll('#tour-booking-list .products-column:first-child .product-cell').length;
+                        const totalPages = Math.ceil(totalItems / itemsPerPageTourBook);
+
+                        const startIdx = (currentPageTourBook - 1) * itemsPerPageTourBook;
+                        const endIdx = currentPageTourBook * itemsPerPageTourBook;
+
+                        // Ẩn tất cả các mục trong danh sách và chỉ hiển thị mục của trang hiện tại
+                        document.querySelectorAll('#tour-booking-list .products-column').forEach(column => {
+                            Array.from(column.querySelectorAll('.product-cell')).forEach((cell, index) => {
+                                cell.style.display = (index >= startIdx && index < endIdx) ? '' : 'none';
+                            });
+                        });
+
+                        // Hiển thị phân trang
+                        const paginationDiv = document.getElementById('tour-booking-pagination');
+                        paginationDiv.innerHTML = '';
+
+                        for (let i = 1; i <= totalPages; i++) {
+                            const btn = document.createElement('button');
+                            btn.textContent = i;
+                            btn.className = 'page-btn' + (i === currentPageTourBook ? ' active' : '');
+                            btn.addEventListener('click', () => {
+                                currentPageTourBook = i;
+                                paginateTourBookings();
+                            });
+                            paginationDiv.appendChild(btn);
+                        }
+
+                        // Nút Next (nếu có)
+                        if (currentPageTourBook < totalPages) {
+                            const nextBtn = document.createElement('button');
+                            nextBtn.textContent = 'Next';
+                            nextBtn.className = 'page-btn';
+                            nextBtn.addEventListener('click', () => {
+                                currentPageTourBook++;
+                                paginateTourBookings();
+                            });
+                            paginationDiv.appendChild(nextBtn);
+                        }
+                    }
+
+                    // Lắng nghe sự kiện tìm kiếm
+                    document.getElementById('search-tour-book').addEventListener('keyup', function () {
+                        const searchValue = this.value.toLowerCase();
+                        const rows = document.querySelectorAll('#tour-booking-list .products-column .product-cell');
+
+                        rows.forEach((cell, index) => {
+                            const text = cell.textContent.toLowerCase();
+                            const isMatch = text.includes(searchValue);
+                            cell.style.display = isMatch ? '' : 'none';
+                        });
+
+                        // Cập nhật lại phân trang sau khi tìm kiếm
+                        paginateTourBookings();
+                    });
+
+                    // Khởi tạo khi trang tải
+                    document.addEventListener('DOMContentLoaded', () => {
+                        paginateTourBookings();
+                    });
+
+                </script>
+
+                <!-- Destination Bookings -->
+                <div class="destination-bookings-content" style="display:none;">
+                    <h3>Destination Bookings</h3>
+                    <div class="search-container">
+                        <input type="text" id="search-destination-book" placeholder="Search Destination Bookings...">
+                    </div>
+                    <div class="products-area-wrapper columnView" id="destination-booking-list">
+                        <!-- Destination Bookings Column -->
+                        <div class="products-column">
+                            <div class="product-header">Destinations</div>
+                            <% if (destinationBookings && destinationBookings.length> 0) { %>
+                                <% destinationBookings.forEach(b=> { %>
+                                    <div class="product-cell">
+                                        <strong>
+                                            <%= b.destination_name %>
+                                        </strong>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="product-cell">No destination bookings available</div>
+                                            <% } %>
+                        </div>
+
+
+                        <div class="products-column">
+                            <div class="product-header">Name of Client</div>
+                            <% if (destinationBookings && destinationBookings.length> 0) { %>
+                                <% destinationBookings.forEach(b=> { %>
+                                    <div class="product-cell">
+                                        <%= b.name %>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="product-cell">No bookings available</div>
+                                            <% } %>
+                        </div>
+
+                        <!-- Phone Column -->
+                        <div class="products-column">
+                            <div class="product-header">Phone</div>
+                            <% if (destinationBookings && destinationBookings.length> 0) { %>
+                                <% destinationBookings.forEach(b=> { %>
+                                    <div class="product-cell">
+                                        <%= b.phone %>
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                        </div>
+
+                        <!-- Guests Column -->
+                        <div class="products-column">
+                            <div class="product-header">Guests</div>
+                            <% if (destinationBookings && destinationBookings.length> 0) { %>
+                                <% destinationBookings.forEach(b=> { %>
+                                    <div class="product-cell">
+                                        <%= b.guest_count %>
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                        </div>
+
+                        <!-- Travel Date Column -->
+                        <div class="products-column">
+                            <div class="product-header">Travel Date</div>
+                            <% if (destinationBookings && destinationBookings.length> 0) { %>
+                                <% destinationBookings.forEach(b=> { %>
+                                    <div class="product-cell">
+                                        <%= b.travel_date.toISOString().split('T')[0] %>
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="destination-booking-pagination"></div>
+                </div>
+
+                <script>
+                    const itemsPerPageDestination = 5;
+                    let currentPageDestination = 1;
+
+                    // Hàm phân trang cho Destination Bookings
+                    function paginateDestinationBookings() {
+                        const totalItems = document.querySelectorAll('#destination-booking-list .products-column:first-child .product-cell').length;
+                        const totalPages = Math.ceil(totalItems / itemsPerPageDestination);
+
+                        const startIdx = (currentPageDestination - 1) * itemsPerPageDestination;
+                        const endIdx = currentPageDestination * itemsPerPageDestination;
+
+                        // Ẩn tất cả các mục trong danh sách
+                        const allCells = document.querySelectorAll('#destination-booking-list .product-cell');
+                        allCells.forEach(cell => {
+                            cell.style.display = 'none'; // Ẩn tất cả các ô
+                        });
+
+                        // Hiển thị các mục trong trang hiện tại
+                        let displayedCount = 0;
+                        document.querySelectorAll('#destination-booking-list .products-column').forEach((column, columnIndex) => {
+                            Array.from(column.querySelectorAll('.product-cell')).forEach((cell, index) => {
+                                if (index >= startIdx && index < endIdx) {
+                                    cell.style.display = '';  // Hiển thị ô này nếu nó thuộc trang hiện tại
+                                    displayedCount++;
+                                }
+                            });
+                        });
+
+                        // Hiển thị phân trang
+                        const paginationDiv = document.getElementById('destination-booking-pagination');
+                        paginationDiv.innerHTML = '';
+
+                        for (let i = 1; i <= totalPages; i++) {
+                            const btn = document.createElement('button');
+                            btn.textContent = i;
+                            btn.className = 'page-btn' + (i === currentPageDestination ? ' active' : '');
+                            btn.addEventListener('click', () => {
+                                currentPageDestination = i;
+                                paginateDestinationBookings();
+                            });
+                            paginationDiv.appendChild(btn);
+                        }
+
+                        // Nút Next (nếu có)
+                        if (currentPageDestination < totalPages) {
+                            const nextBtn = document.createElement('button');
+                            nextBtn.textContent = 'Next';
+                            nextBtn.className = 'page-btn';
+                            nextBtn.addEventListener('click', () => {
+                                currentPageDestination++;
+                                paginateDestinationBookings();
+                            });
+                            paginationDiv.appendChild(nextBtn);
+                        }
+                    }
+
+                    // Khởi tạo khi trang tải
+                    document.addEventListener('DOMContentLoaded', () => {
+                        paginateDestinationBookings();
+                    });
+                </script>
+
+                <script>
+                    document.getElementById('search-destination-book').addEventListener('keyup', function () {
+                        const searchValue = this.value.toLowerCase();
+                        const destinationIdCells = document.querySelectorAll('#destination-booking-list .products-column:nth-child(1) .product-cell');
+
+                        destinationIdCells.forEach((cell, index) => {
+                            const destinationId = cell.textContent.toLowerCase();
+                            const show = destinationId.includes(searchValue);
+                            document.querySelectorAll('#destination-booking-list .products-column').forEach(col => {
+                                col.children[index + 1].style.display = show ? '' : 'none';
+                            });
+                        });
+                    });
+                </script>
+
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.getElementById('search-tour-book').addEventListener('keyup', function () {
+            const searchValue = this.value.toLowerCase();
+            const tourIdCells = document.querySelectorAll('#tour-booking-list .products-column:nth-child(1) .product-cell');
+
+            tourIdCells.forEach((cell, index) => {
+                const tourId = cell.textContent.toLowerCase();
+                const show = tourId.includes(searchValue);
+
+                document.querySelectorAll('#tour-booking-list .products-column').forEach(col => {
+                    const row = col.children[index + 1]; // +1 vì children[0] là header
+                    if (row) row.style.display = show ? '' : 'none';
+                });
+            });
+        });
+    </script>
+
+    <script>
+        var modeSwitch = document.querySelector('.mode-switch');
+        var moonIcon = document.querySelector('.moon-icon');
+        var sunIcon = document.querySelector('.sun-icon');
+        var sunFaIcon = document.querySelector('.fas.fa-sun');
+
+        // Toggle sidebar
+        let sidebarToggleBtn = document.getElementById('menu-toggle');
+        let sidebar = document.querySelector('.sidebar');
+
+        sidebarToggleBtn.addEventListener('click', function () {
+            sidebar.classList.toggle('sidebar-collapsed');
+            sidebar.classList.toggle('sidebar-expanded');
+            document.querySelector(".app-left").classList.toggle("collapsed");
+        });
+
+        // Set initial icon state
+        if (document.documentElement.classList.contains('light')) {
+            moonIcon.style.display = 'none';
+            sunIcon.style.display = 'none';
+            sunFaIcon.style.display = 'block';
+        } else {
+            moonIcon.style.display = 'block';
+            sunIcon.style.display = 'none';
+            sunFaIcon.style.display = 'none';
+        }
+
+        // Toggle light/dark mode
+        modeSwitch.addEventListener('click', function () {
+            document.documentElement.classList.toggle('light');
+            modeSwitch.classList.toggle('active');
+
+            if (document.documentElement.classList.contains('light')) {
+                moonIcon.style.display = 'none';
+                sunIcon.style.display = 'none';
+                sunFaIcon.style.display = 'block';
+            } else {
+                moonIcon.style.display = 'block';
+                sunIcon.style.display = 'none';
+                sunFaIcon.style.display = 'none';
+            }
+        });
+
+        // Handle navigation click
+        document.getElementById("dashboard-btn").addEventListener("click", function () {
+            hideAllContent();
+            document.querySelector(".dashboard-content").style.display = "block";
+            setActiveNavItem(this);
+        });
+
+        document.getElementById("tours-btn").addEventListener("click", function () {
+            hideAllContent();
+            document.querySelector(".tour-content").style.display = "block";
+            setActiveNavItem(this);
+        });
+
+        document.getElementById("destinations-btn").addEventListener("click", function () {
+            hideAllContent();
+            document.querySelector(".destination-content").style.display = "block";
+            setActiveNavItem(this);
+        });
+
+        document.getElementById("blogs-btn").addEventListener("click", function () {
+            hideAllContent();
+            document.querySelector(".blog-content").style.display = "block";
+            setActiveNavItem(this);
+        });
+
+        // Thêm xử lý cho bookings
+        document.getElementById("toursBook-btn").addEventListener("click", function () {
+            hideAllContent();
+            document.querySelector(".tour-bookings-content").style.display = "block";
+            setActiveNavItem(this);
+        });
+
+        document.getElementById("desBook-btn").addEventListener("click", function () {
+            hideAllContent();
+            document.querySelector(".destination-bookings-content").style.display = "block";
+            setActiveNavItem(this);
+        });
+
+        // Ẩn tất cả các section
+        function hideAllContent() {
+            const sections = document.querySelectorAll(
+                ".dashboard-content, .tour-content, .destination-content, .blog-content, .tour-bookings-content, .destination-bookings-content"
+            );
+            sections.forEach(s => s.style.display = "none");
+        }
+
+        // Set nav item active
+        function setActiveNavItem(activeItem) {
+            var navItems = document.querySelectorAll(".nav-item");
+            navItems.forEach(function (item) {
+                item.classList.remove("active");
+            });
+            activeItem.classList.add("active");
+        }
+
+        // Mặc định hiển thị dashboard
+        hideAllContent();
+        document.querySelector(".dashboard-content").style.display = "block";
+    </script>
+
+
+    <script>
+        document.getElementById('add-tour-btn').addEventListener('click', () => {
+            window.location.href = '/admin/add-tour';
+        });
+
+        document.getElementById('add-destination-btn').addEventListener('click', () => {
+            window.location.href = '/admin/add-des';
+        });
+
+        document.getElementById('add-blog-btn').addEventListener('click', () => {
+            window.location.href = '/admin/add-blog';
+        });
+    </script>
+
+</body>
+
+</html>
